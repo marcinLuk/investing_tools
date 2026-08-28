@@ -24,7 +24,27 @@ Frontend (resources/js, TypeScript/React):
 - `npm run format` / `npm run format:check` — Prettier (fix / check-only)
 - `npm run types:check` — `tsc --noEmit`
 
-There is no git repository initialized yet (`git init` has not been run).
+## Browser testing
+
+**Always drive the browser with `playwright-cli`, never the Playwright MCP server.** The MCP tools (`mcp__playwright__browser_*`) are the wrong choice in this repo even when they are available — do not reach for them.
+
+`playwright-cli` is on `PATH` (from `@playwright/cli`) and takes one action per invocation, holding a persistent browser session between calls, so a multi-step flow is a sequence of ordinary shell commands:
+
+```bash
+playwright-cli open http://localhost:8000/   # start session + navigate
+playwright-cli fill "input#email" "test@example.com"
+playwright-cli fill "input#password" "password"
+playwright-cli click '[data-test="login-button"]'
+playwright-cli goto http://localhost:8000/
+playwright-cli close                          # always close when done
+```
+
+Also available: `snapshot` (accessibility tree — prefer over `screenshot` for assertions), `eval`, `press`, `hover`, `select`, `check`, `tab-*`, `go-back`/`reload`, and `state-save`/`state-load` for reusing an authenticated session. Run `playwright-cli --help` for the full list.
+
+Notes:
+- The app must be running first (`composer run dev`); commands hit `http://localhost:8000`.
+- Each invocation writes snapshot/console dumps to `.playwright-cli/` in the working directory — run from a scratch dir, not the repo root. Both `.playwright-cli` and `.playwright-mcp` are gitignored.
+- Browser verification complements Pest, it does not replace it — a route change still needs a feature test.
 
 ## Architecture
 
