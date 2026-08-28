@@ -2,7 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::inertia('/', 'welcome')->name('home');
+/**
+ * The app has no public landing page. Guests are sent to the login screen;
+ * Fortify's `guest` middleware bounces authenticated users on to the dashboard.
+ */
+Route::redirect('/', '/login')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');

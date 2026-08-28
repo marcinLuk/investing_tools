@@ -23,6 +23,7 @@ npm-debug.log
 yarn-error.log
 /auth.json
 /.claude
+/.playwright-mcp
 /.fleet
 /.idea
 /.nova
